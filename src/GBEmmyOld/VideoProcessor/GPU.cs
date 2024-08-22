@@ -14,6 +14,7 @@
 using GBEmmy.Memory;
 using GBEmmy.Registers;
 using GBEmmy.VideoProcessor;
+using System;
 
 namespace GBEmmy
 {
