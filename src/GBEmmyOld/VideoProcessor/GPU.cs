@@ -58,30 +58,35 @@ namespace GBEmmy
         {
             if (!_lcdc.DisplayEnabled)
             {
-                //TODO: Clear line
-
+                Array.Clear(ScreenBuffer, line * Width, Width);
                 return;
             }
 
             if (_lcdc.BackgroundEnabled)
             {
-                //Render background
                 TileMap map = _tileMaps[_lcdc.BackgroundTileMap];
 
-                for (byte x = 0; x < Width; x ++)
-                {
-                    int mapX = (_scx.Value + x)%Width;
-                    int mapY = (_scy.Value + _ly.Line)%Height;
+                int mapY = (_scy.Value + line) % Height;
 
-                    //idx of tile on map
-                    var idx = (ushort) ((mapY/Tile.Height)*TileMap.Width + (mapX/Tile.Width));
+                int tileRow = (mapY / Tile.Height) * TileMap.Width;
+
+                for (byte x = 0; x < Width; x++)
+                { 
+                    int mapX = (_scx.Value + x) % Width;
+
+                    int tileColumn = mapX / Tile.Width;
+
+                    var idx = (ushort)(tileRow + tileColumn);
 
                     Tile tile = map[idx];
 
-                    uint c = tile.GetPixel(_memory, (byte) (mapX%Tile.Width), (byte) (mapY%Tile.Height));
-                    ScreenBuffer[_ly.Line*Width + x] = c;
+                    byte tileX = (byte)(mapX % Tile.Width);
+                    byte tileY = (byte)(mapY % Tile.Height);
+
+                    uint c = tile.GetPixel(_memory, tileX, tileY);
+
+                    ScreenBuffer[line * Width + x] = c;
                 }
-                //...
             }
         }
 
